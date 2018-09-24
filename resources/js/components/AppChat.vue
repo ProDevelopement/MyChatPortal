@@ -37,6 +37,8 @@
         },
         methods: {
             startConversationWith(friend) {
+                this.updateUnreadCount(friend, true);
+
                 axios.get(`/api/v1/getMessages/${friend.id}`, { headers: { "Authorization" : 'Bearer ' + window.api_token } })
                     .then((response) => {
                         this.messages = response.data;
@@ -65,7 +67,18 @@
                 }
                 this.updateUnreadCount(message.from_contact, false);
             },
-
+            updateUnreadCount(friend, reset) {
+                this.friends = this.friends.map((single) => {
+                    if (single.id !== friend.id) {
+                        return single;
+                    }
+                    if (reset)
+                        single.unread = 0;
+                    else
+                        single.unread += 1;
+                    return single;
+                })
+            }
         }
     }
 </script>

@@ -1,7 +1,10 @@
 <template>
     <div class="friendList">
       <ul class="list-group">
-  		  <li v-for="friend in friends" :key="friend.id" @click="selectFriend(friend)" class="list-group-item">{{ friend.name }}</li>
+  		  <li v-for="friend in friends" :key="friend.id" @click="selectFriend(friend)" class="list-group-item">
+          {{ friend.name }}
+          <span class="badge badge-info" v-if="friend.unread > 0">{{ friend.unread }}</span>
+        </li>
   		</ul>
     </div>
 </template>

@@ -57286,6 +57286,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         startConversationWith: function startConversationWith(friend) {
             var _this2 = this;
 
+            this.updateUnreadCount(friend, true);
+
             axios.get('/api/v1/getMessages/' + friend.id, { headers: { "Authorization": 'Bearer ' + window.api_token } }).then(function (response) {
                 _this2.messages = response.data;
                 _this2.selectedFriend = friend;
@@ -57312,6 +57314,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 return;
             }
             this.updateUnreadCount(message.from_contact, false);
+        },
+        updateUnreadCount: function updateUnreadCount(friend, reset) {
+            this.friends = this.friends.map(function (single) {
+                if (single.id !== friend.id) {
+                    return single;
+                }
+                if (reset) single.unread = 0;else single.unread += 1;
+                return single;
+            });
         }
     }
 });
@@ -57753,6 +57764,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: {
@@ -57843,7 +57857,14 @@ var render = function() {
               }
             }
           },
-          [_vm._v(_vm._s(friend.name))]
+          [
+            _vm._v("\n        " + _vm._s(friend.name) + "\n        "),
+            friend.unread > 0
+              ? _c("span", { staticClass: "badge badge-info" }, [
+                  _vm._v(_vm._s(friend.unread))
+                ])
+              : _vm._e()
+          ]
         )
       })
     )

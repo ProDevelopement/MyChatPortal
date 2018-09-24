@@ -11,11 +11,29 @@ use App\Events\NewMessage;
 class ApiController extends Controller {
 
 	public function getFriends(){
-		$allUsers = User::where('id', '!=', Auth::user()->id)->get();
-		return $allUsers;
-	}
+        // get all users except the authenticated one
+        $friends = User::where('id', '!=', auth()->id())->get();
+
+        // get a collection of items where sender_id is the user who sent us a message
+        // and messages_count is the number of unread messages we have from him
+        $unreadIds = Message::select(\DB::raw('`from` as sender_id, count(`from`) as messages_count'))
+            ->where('to', auth()->id())
+            ->where('read', false)
+            ->groupBy('from')
+            ->get();
+
+        // add an unread key to each contact with the count of unread messages
+        $friends = $friends->map(function($friends) use ($unreadIds) {
+            $contactUnread = $unreadIds->where('sender_id', $friends->id)->first();
+            $friends->unread = $contactUnread ? $contactUnread->messages_count : 0;
+            return $friends;
+        });
+        return response()->json($friends);
+    }
 
 	public function getMessages($id){
+        Message::where('from', $id)->where('to', auth()->id())->update(['read' => true]);
+        
 		$messages = Message::where(function($q) use ($id) {
             $q->where('from', auth()->id());
             $q->where('to', $id);
