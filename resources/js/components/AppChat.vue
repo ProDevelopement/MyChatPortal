@@ -59,6 +59,7 @@
             },
             closePanel(){
                 this.classShowChatPanel = 'none';
+                this.selectedFriend = null;
             },
             hanleIncoming(message) {
                 if (this.selectedFriend && message.from == this.selectedFriend.id) {
