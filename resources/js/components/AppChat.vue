@@ -55,6 +55,7 @@
                 }else{
                     this.classShowChat = 'none';
                     this.classShowChatPanel = 'none';
+                    this.selectedFriend = null;
                 }
             },
             closePanel(){
